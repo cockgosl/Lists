@@ -19,15 +19,13 @@ void LIST_DESTROY (S_LIST* LIST);
 void LIST_INSERT (S_LIST* LIST, size_t anchor, type value);
 void LIST_DUMP (S_LIST* LIST);
 void LIST_DELETE (S_LIST* LIST, size_t anchor);
+void LISTG_DUMP (S_LIST* LIST);
 
 
 int main() {
     S_LIST LIST1 = {};
     LIST_INIT(&LIST1, 5);
-    LIST_INSERT(&LIST1, 10, 10);
-    LIST_INSERT(&LIST1, 1, 20);
-    LIST_INSERT(&LIST1, 0 , 5);
-    LIST_INSERT(&LIST1, 3, 7);
+    LIST_DELETE(&LIST1, 1);
     LIST_DELETE(&LIST1, 1);
     LIST_DUMP(&LIST1);
     LIST_DESTROY(&LIST1);
@@ -143,6 +141,15 @@ void LIST_DELETE (S_LIST* LIST, size_t anchor) {
         else if (anchor > LIST->amount || anchor == 0) {
             fprintf (stderr, "There is no such anchor\n");    
         }
+        else if (LIST->amount == 1) {
+            temp = LIST->FREE;
+            LIST->FREE = anchor;
+            LIST->data[anchor] = 0;
+            LIST->next[LIST->HEAD] = temp;
+            LIST->TAIL = 0;
+            LIST->HEAD = 0;
+            LIST->amount--;
+        }
         else if (anchor == LIST->TAIL) {
             LIST->amount--;
             temp = LIST->FREE;
@@ -211,4 +218,8 @@ void LIST_DUMP (S_LIST* LIST) {
     else {
         printf ("Something is wrong with the given LIST\n");
     }
+}
+
+void LISTG_DUMP (S_LIST* LIST) {
+    ;
 }
