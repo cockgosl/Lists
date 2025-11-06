@@ -23,12 +23,7 @@ void LISTG_DUMP (S_LIST* LIST);
 
 
 int main() {
-    S_LIST LIST1 = {};
-    LIST_INIT(&LIST1, 5);
-    LIST_DELETE(&LIST1, 1);
-    LIST_DELETE(&LIST1, 1);
-    LIST_DUMP(&LIST1);
-    LIST_DESTROY(&LIST1);
+    return 0;
 }
 
 void LIST_INIT (S_LIST* LIST, size_t size) {
@@ -222,4 +217,5 @@ void LIST_DUMP (S_LIST* LIST) {
 
 void LISTG_DUMP (S_LIST* LIST) {
     ;
+
 }
