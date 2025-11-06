@@ -22,12 +22,12 @@ void LISTG_DUMP (S_LIST* LIST);
 
 int main() {
     S_LIST LIST1 = {};
-    LIST_INIT(&LIST1, 5);
+    LIST_INIT(&LIST1, 10);
     LIST_INSERT(&LIST1, 0, 10);
+    LIST_INSERT(&LIST1, 1, 9);
+    LIST_INSERT(&LIST1, 0, 8);
     LIST_INSERT(&LIST1, 0, 7);
-    LIST_INSERT(&LIST1, 2, 9);
-    LIST_INSERT(&LIST1, 1, 25);
-    LIST_DUMP(&LIST1);
+    LISTG_DUMP(&LIST1);
     LIST_DESTROY(&LIST1);
 }
 
@@ -44,6 +44,8 @@ void LIST_INIT (S_LIST* LIST, size_t size) {
         for (int j = 1; j < LIST->size; j++) {
             LIST->prev[j] = -1;
         }
+
+        LIST->next[LIST->size] = 0;
 
         if ( LIST && !(LIST->data && LIST->prev && LIST->next)) {
             fprintf (stderr, "List cannot be initialized\n");
@@ -164,5 +166,67 @@ void LIST_DUMP (S_LIST* LIST) {
 }
 
 void LISTG_DUMP (S_LIST* LIST) {
-    ;
+    size_t previous = 0;
+    FILE *output = fopen("g.gv", "w");
+    fprintf (output,"digraph G{\n   rankdir=LR;\n   edge [color = \"blue\"];\n   node [color = \"red\"];");
+
+    for (size_t i = LIST->next[0], counter = 0; i != 0 && counter < LIST->size; i = LIST->next[i], counter++ ) {
+        fprintf (output, "\n");
+        if (LIST->prev[i] == previous) {
+            fprintf (output, "   %ld [shape = record, color = \"black\", label=\" index = %ld \\n| value = %f \\n | {prev =%ld | next = %ld }\"];",i ,i , LIST->data[i], LIST->prev[i], LIST->next[i]);
+        }
+        else {
+            fprintf (output, "   %ld;", i);
+        }
+        previous = i;
+    }
+
+    for (size_t i = LIST->FREE, counter = 0; i != 0 && counter < LIST->size; i = LIST->next[i] , counter++) {
+        fprintf (output, "\n");
+        if (LIST->data[i] == 0 && LIST->next[LIST->next[i]] != i ) {
+            fprintf (output, "   \"%ldf\" [shape = record, color = \"black\", label=\" index = %ld \\n| value = %f \\n | {prev =%ld | next = %ld }\"];",i ,i , LIST->data[i], LIST->prev[i], LIST->next[i]);
+        }
+        else {
+            if (i != 0) {
+                fprintf (output, "   \"%ldf\";", i);
+                fprintf (output, "   \"%ldf\";", LIST->next[i]);
+            }
+            break;
+        }
+    }
+
+    fprintf (output, "\n");
+    fprintf (output, "   ");
+
+    for (size_t j = LIST->next[0], counter = 0; j != 0 && counter < LIST->size; j = LIST->next[j], counter++ ) {
+        if (LIST->next[j] != 0) {
+            fprintf (output, "%ld->", j);
+        }
+        else {
+            fprintf (output, "%ld", j);
+        }
+    }
+
+    fprintf (output, "\n");
+    fprintf (output, "   ");
+
+    for (size_t j = LIST->FREE, counter = 0; j != 0 && counter < LIST->size; j = LIST->next[j], counter++ ) {
+        if (LIST->next[j] != 0 && counter < LIST->size && LIST->next[LIST->next[j]] != j) {
+            fprintf (output, "\"%ldf\"->", j);
+        }
+        else {
+            if (LIST->next[j] != 0) {
+                fprintf (output, "\"%ldf\"->\"%ldf\"", j, LIST->next[j]);
+            }
+            else {
+                fprintf (output, "\"%ldf\"", j);
+            }
+            break;
+        }
+    }
+    fprintf (output, "\n");
+
+
+    fprintf (output,"\n}");
+    fclose (output);
 }
