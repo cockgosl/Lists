@@ -21,7 +21,7 @@ void LISTG_DUMP (S_LIST* LIST);
 
 
 int main() {
-    ;
+    return 0;
 }
 
 void LIST_INIT (S_LIST* LIST, size_t size) {
@@ -224,3 +224,4 @@ void LISTG_DUMP (S_LIST* LIST) {
     fclose (output);
 
 }
+
