@@ -21,14 +21,7 @@ void LISTG_DUMP (S_LIST* LIST);
 
 
 int main() {
-    S_LIST LIST1 = {};
-    LIST_INIT(&LIST1, 10);
-    LIST_INSERT(&LIST1, 0, 10);
-    LIST_INSERT(&LIST1, 1, 9);
-    LIST_INSERT(&LIST1, 0, 8);
-    LIST_INSERT(&LIST1, 0, 7);
-    LISTG_DUMP(&LIST1);
-    LIST_DESTROY(&LIST1);
+    ;
 }
 
 void LIST_INIT (S_LIST* LIST, size_t size) {
@@ -229,4 +222,5 @@ void LISTG_DUMP (S_LIST* LIST) {
 
     fprintf (output,"\n}");
     fclose (output);
+
 }
