@@ -22,7 +22,6 @@ void LIST_DUMP (S_LIST* LIST);
 void LIST_DELETE (S_LIST* LIST, size_t anchor);
 void LISTG_DUMP (S_LIST* LIST);
 
-
 int main() {
     return 0;
 }
@@ -223,6 +222,6 @@ void LIST_DUMP (S_LIST* LIST) {
 
 void LISTG_DUMP (S_LIST* LIST) {
     ;
-
 }
+
 
