@@ -1,15 +1,16 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <assert.h>
 
 typedef double type;
 
 struct S_LIST {
-    size_t HEAD = 0;
-    size_t TAIL = 0;
+    size_t head = 0;
+    size_t tail = 0;
     type* data;
     size_t* next;
     size_t* prev;
-    size_t FREE = 1;
+    size_t free = 1;
     size_t size = 0;
     size_t amount = 0;
 };
@@ -31,6 +32,11 @@ void LIST_INIT (S_LIST* LIST, size_t size) {
         LIST->data = (type*)calloc (size + 1, sizeof (type));
         LIST->next = (size_t*)calloc (size + 1, sizeof (size_t));
         LIST->prev = (size_t*)calloc (size + 1, sizeof (size_t));
+
+        assert (LIST->data);
+        assert (LIST->next);
+        assert (LIST->prev);
+
         LIST->size = size;
 
         for (int i = 1; i < LIST->size; i++) {
@@ -75,46 +81,46 @@ void LIST_INSERT (S_LIST* LIST, size_t anchor, type value) {
         if (LIST->amount == 0) {
             LIST->amount++;
 
-            LIST->HEAD = 1;
-            LIST->TAIL = 1;
+            LIST->head = 1;
+            LIST->tail = 1;
             
-            temp = LIST->FREE;
-            LIST->FREE = LIST->next[LIST->FREE];
+            temp = LIST->free;
+            LIST->free = LIST->next[LIST->free];
             LIST->data[temp] = value;
 
-            LIST->next[LIST->TAIL] = 0; 
+            LIST->next[LIST->tail] = 0; 
         }
         else if (anchor > LIST->amount) {
             fprintf (stderr, "There is no such anchor\n");    
         }
-        else if (anchor == LIST->TAIL) {
+        else if (anchor == LIST->tail) {
             LIST->amount++;
 
-            temp = LIST->FREE;
-            LIST->FREE = LIST->next[temp];
-            LIST->next[LIST->TAIL] = temp;
-            LIST->prev[temp] = LIST->TAIL;
-            LIST->TAIL = temp;
+            temp = LIST->free;
+            LIST->free = LIST->next[temp];
+            LIST->next[LIST->tail] = temp;
+            LIST->prev[temp] = LIST->tail;
+            LIST->tail = temp;
             LIST->data[temp] = value;
 
-            LIST->next[LIST->TAIL] = 0;
+            LIST->next[LIST->tail] = 0;
         }
         else if (anchor == 0) {
             LIST->amount++;
 
-            temp = LIST->FREE;
-            LIST->FREE = LIST->next[temp];
+            temp = LIST->free;
+            LIST->free = LIST->next[temp];
             LIST->data[temp] = value;
-            LIST->next[temp] = LIST->HEAD;
+            LIST->next[temp] = LIST->head;
             LIST->prev[temp] = 0;
-            LIST->prev[LIST->HEAD] = temp;
-            LIST->HEAD = temp;
+            LIST->prev[LIST->head] = temp;
+            LIST->head = temp;
 
         }
         else {
             LIST->amount++;
-            temp = LIST->FREE;
-            LIST->FREE = LIST->next[temp];
+            temp = LIST->free;
+            LIST->free = LIST->next[temp];
             LIST->data[temp] = value;
             LIST->next[temp] = LIST->next[anchor];
             LIST->prev[LIST->next[anchor]] = temp;
@@ -137,38 +143,38 @@ void LIST_DELETE (S_LIST* LIST, size_t anchor) {
             fprintf (stderr, "There is no such anchor\n");    
         }
         else if (LIST->amount == 1) {
-            temp = LIST->FREE;
-            LIST->FREE = anchor;
+            temp = LIST->free;
+            LIST->free = anchor;
             LIST->data[anchor] = 0;
-            LIST->next[LIST->HEAD] = temp;
-            LIST->TAIL = 0;
-            LIST->HEAD = 0;
+            LIST->next[LIST->head] = temp;
+            LIST->tail = 0;
+            LIST->head = 0;
             LIST->amount--;
         }
-        else if (anchor == LIST->TAIL) {
+        else if (anchor == LIST->tail) {
             LIST->amount--;
-            temp = LIST->FREE;
-            LIST->FREE = anchor;
+            temp = LIST->free;
+            LIST->free = anchor;
             LIST->data[anchor] = 0;
-            LIST->TAIL = LIST->prev[LIST->TAIL];
+            LIST->tail = LIST->prev[LIST->tail];
             LIST->next[LIST->prev[anchor]] = 0;
-            LIST->next[anchor] = LIST->TAIL;
+            LIST->next[anchor] = LIST->tail;
             LIST->prev[anchor] = -1;
         }
-        else if (anchor == LIST->HEAD) {
+        else if (anchor == LIST->head) {
             LIST->amount--;
-            temp = LIST->FREE;
-            LIST->FREE = anchor;
-            LIST->HEAD = LIST->next[LIST->HEAD];
+            temp = LIST->free;
+            LIST->free = anchor;
+            LIST->head = LIST->next[LIST->head];
             LIST->data[anchor] = 0;
             LIST->next[anchor] = temp;
-            LIST->prev[LIST->HEAD] = 0;
+            LIST->prev[LIST->head] = 0;
             LIST->prev[anchor] = -1;
         }
         else {
             LIST->amount--;
-            temp = LIST->FREE;
-            LIST->FREE = anchor;
+            temp = LIST->free;
+            LIST->free = anchor;
             LIST->data[anchor] = 0;
             LIST->next[LIST->prev[anchor]] = LIST->next[anchor];
             LIST->prev[LIST->next[anchor]] = LIST->prev[anchor];
@@ -184,22 +190,22 @@ void LIST_DELETE (S_LIST* LIST, size_t anchor) {
 void LIST_DUMP (S_LIST* LIST) {
     size_t temp = 0;
     if (LIST) {
-        printf ("HEAD = %ld\n", LIST->HEAD);
-        printf ("TAIL = %ld\n", LIST->TAIL);
-        printf ("FREE = %ld\n", LIST->FREE);
+        printf ("head = %ld\n", LIST->head);
+        printf ("tail = %ld\n", LIST->tail);
+        printf ("free = %ld\n", LIST->free);
         printf ("size = %ld\n", LIST->size);
         printf ("amount = %ld\n", LIST->amount);
 
         printf ("\n");
 
-        for (size_t i = LIST->HEAD; i != 0; i = LIST->next[i]) {
+        for (size_t i = LIST->head; i != 0; i = LIST->next[i]) {
             printf ("element%ld: %f\n", i, LIST->data[i]);
         }
 
         printf ("\n");
         printf ("from the tail\n\n");
 
-        for (size_t i = LIST->TAIL; i != 0; i = LIST->prev[i]) {
+        for (size_t i = LIST->tail; i != 0; i = LIST->prev[i]) {
             printf ("element%ld: %f\n", i, LIST->data[i]);
         }
         printf ("\n");
@@ -219,3 +225,4 @@ void LISTG_DUMP (S_LIST* LIST) {
     ;
 
 }
+
